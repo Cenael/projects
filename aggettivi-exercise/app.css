@@ -1,0 +1,150 @@
+#loginbtn,
+#logoutBtn {
+  text-align: center;
+  padding: 5px 40px;
+  background-color: rgba(0, 0, 0, 0.274);
+  text-decoration: none;
+  font-size: 19px;
+  border: 1px solid black;
+  color: rgb(0, 0, 0);
+  text-shadow: 2px 1px rgba(196, 196, 196, 0.274);
+}
+
+#addBtn {
+  text-align: center;
+  padding: 2px 20px;
+  background-color: rgba(0, 0, 0, 0.274);
+  text-decoration: none;
+  font-size: 14px;
+  border: 1px solid black;
+  color: rgb(0, 0, 0);
+  text-shadow: 2px 1px rgba(196, 196, 196, 0.274);
+}
+#username {
+  box-shadow: -5px 1px 10px 1px rgba(0, 0, 0, 0.274);
+  padding: 4px 5px;
+  text-align: center;
+  font-size: 19px;
+  background-color: rgba(0, 0, 0, 0.274);
+  text-decoration: none;
+  border: 1px solid black;
+  margin-bottom: 10px;
+}
+
+#nameInput {
+  box-shadow: -5px 1px 10px 1px rgba(0, 0, 0, 0.274);
+  padding: 2px 1px;
+  text-align: center;
+  font-size: 14px;
+  background-color: rgba(0, 0, 0, 0.274);
+  text-decoration: none;
+  border: 1px solid black;
+  margin-left: 5px;
+}
+#loginbtn:disabled,
+#addBtn:disabled {
+  background-color: rgba(0, 0, 0, 0.274);
+  cursor: not-allowed;
+  color: grey;
+}
+
+#loginbtn:not(:disabled):hover,
+#addBtn:not(:disabled):hover {
+  background-color: rgba(53, 255, 2, 0.596);
+  cursor: pointer;
+  color: black;
+}
+#root {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.subtitle {
+  text-align: center;
+  font-size: 18px;
+  color: #000000;
+  margin-bottom: 30px;
+  font-weight: 500;
+  font-style: oblique;
+  text-shadow: 1px 1px rgba(196, 196, 196, 0.274);
+}
+h2 {
+  align-items: center;
+  text-align: center;
+  font-family: "Arial", "Helvetica", sans-serif;
+  font-size: 24px;
+  padding-top: 20px;
+  margin-top: 20px;
+  border: 2px solid black;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  text-shadow: 1px 1px rgba(196, 196, 196, 0.274);
+}
+#login {
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 20px;
+  /* background-color: rgba(255, 255, 255, 0.37); */
+  /* border: 1px solid black;
+  border-radius: 5px; */
+  padding: 5px 10px;
+  text-shadow: 1px 1px rgba(196, 196, 196, 0.274);
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  text-decoration: underline;
+}
+li {
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  justify-content: space-between;
+  align-items: right;
+  padding: 10px;
+  border-bottom: 1px solid black;
+  margin-bottom: 10px;
+  margin-top: 20px;
+  font-size: 18px;
+}
+
+.name {
+  flex: 1;
+  text-align: left;
+}
+
+.aggettivi {
+  display: flex;
+  flex-direction: column;
+  flex: 2;
+  text-align: right;
+}
+
+#logoutBtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: red;
+  font-size: 10px;
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+  padding: 10px 7px;
+  text-shadow: none;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+#logoutBtn:hover {
+  background-color: rgb(185, 20, 20);
+}
+
+#welcome {
+  font-size: 12px;
+  color: #000000;
+  margin-bottom: 15px;
+  font-weight: 500;
+  font-style: oblique;
+  text-shadow: 1px 1px rgba(196, 196, 196, 0.274);
+}
