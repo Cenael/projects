@@ -1,148 +1,399 @@
+const model = require("./model.js");
 class Marketplace {
-    users = []
-    ads = []
-    reviews = []
-    auth = []
-    reports = []
-    favourites = []
+  users = [];
+  ads = [];
+  reviews = [];
+  auth = [];
+  reports = [];
+  favourites = [];
 
-register (email, password){ 
-    //salvare i dati inseriti e inserirli nell'array "users"//
-}
-
-login (username, password){
-    //verificare se i dati esistono nell'array users, se esistono reindirizzare alla pagina successiva e inserire nell'array "auth" (che a sua volta creerà un token), altrimenti dare un "errore"
-}
-
-logout(token){
-    // verificare se c'è l'username nella lista "auth" e rimuovere il codice univoco (token)
-}
-
-// createAd(referenceKeyUser , token, title, description, category, status, price, urlPhoto, address, sold, phone??????){
-    //attraverso il token si verifica se l'utente è loggato e poi attraverso il modelad inserisce l'ad all'array ads
-}
-
-modifyAd(referenceKeyAd, referenceKeyUser, token){
-    //dato l'id del Ad creato dall'utente, solo lo stesso che lo ha creato può accedervi (attraverso il token), verificare se è presente all'interno dell'array ads e modificarlo
-}
-
-deleteAd(referenceKeyAd, referenceKeyUser, token){
-    //dato l'id del Ad creato dall'utente, verifica se l'utente è lo stesso che lo ha creato (attraverso il token) e lo elimina
-}
-
-createReview(referenceKeyUser, token, referenceKeyAd ){ 
-    //verificare se l'utente è loggato, l'utente potrà utilizzare il ModelReview per inserire una recensione. aggiungere la recensione all'array reviews
-}
-
-modifyReview(token, primaryKeyReview, referenceKeyUser){
-    //verificare se l'utente che vuole modificare la recensione è lo stesso che l'ha creata, recuperare la recensione dall'array "reviews"
-}
-
-deleteReview(referenceKeyUser, primaryKeyReview, token){
-    //verificare se l'user corrisponde al token,  recuperare la primaryKeyReview ed eliminarla
-}
-
-deleteAccount(referenceKeyUser, token){
-    // verificare se l'user corrisponde al token, eliminare l'account
-}
-
-modifyUsername(referenceKeyUser, token){
-    //se l'user corrisponde al token, username dell'array user può essere cambiato
-}
-
-putSold(token, referenceKeyUser, referenceKeyAd){
-    // recuperare l'ad, verificare token.., verificare se "sold" è falso e in quel caso impostarlo a true (faccio il map su "ads", trova l'id di Ad e modifica la chiave sold in true)
-
-}
-
-filterList(price, category, status, sold){}
-
-selectSoldProduct(referenceKeyAd, referenceKeyUser, token){}
-
-selectBoughtProduct(referenceKeyAd, referenceKeyUser, token){}
-
-createFavouriteList(referenceKeyAd, referenceKeyUser, token){}
-
-addFavourite(referenceKeyUser, referenceKeyAd){}
-
-removeFavourite(referenceKeyAd, referenceKeyUser){}
-
-searchAd(){}
-
-
-
-
-
-
-
-    
-}
-
-class ModelUser {
-    constructor(username, email, password) 
-    {this.primaryKey = Math.random()
-        this.username = username;
-        this.email = email;
-        this.password = password
+  register(email, password) {
+    const userFound = this.users.find(function (user) {
+      if (user.email === email) return true;
+      else return false;
+    });
+    if (!!userFound) {
+      return console.log("User already exists");
+    } else {
+      const newUser = new ModelUser(email, password);
+      this.users = [...this.users, newUser];
     }
-    
-}
+  }
 
-class ModelAd { 
-    constructor(title, description, category, status, price, urlPhoto, address, sold, phone ) {
-        this.primaryKey = Math.random()
-        this.referenceKeyUser = referenceKeyUser
-        this.createdAt = new Date();
-        this.title = title;
-        this.description = description
-        this.category = category 
-        this.status = status 
-        this.price = price 
-        this.urlPhoto = urlPhoto 
-        this.address = address
-        this.sold = false
-        this.phone = phone
+  login(username, password) {
+    const authFound = this.users.find(function (user) {
+      if (user.username === username && user.password === password) return true;
+      else return false;
+    });
+    if (!authFound) return console.log("Invalid credentials");
+    const token = new ModelAuth(authFound.referenceKeyUser);
+    this.auth = [...this.auth, token];
+  }
+
+  logout(token) {
+    const auth = this.getUserByToken(token);
+    if (!auth) {
+      console.log("Invalid Token");
+    } else {
+      this.auth = this.auth.filter(function (auth) {
+        if (auth.token !== token) return true;
+        else return false;
+      });
+      console.log("Succesfully logged out");
     }
-}
-    class ModelReview { 
-        constructor(referenceKeyUser, title, description, rating, date, referenceKeyAd)  
-        {
-            this.primaryKey = Math.random()
-            this.referenceKeyUser = referenceKeyUser
-            this.title = title
-            this.description = description
-            this.rating = rating
-            this.date = date
-            this.referenceKeyAd = referenceKeyAd
+  }
 
-        } }
+  getUserByToken(token) {
+    const authFound = this.auth.find(function (auth) {
+      if (auth.token === token) return true;
+      else return false;
+    });
+    if (!authFound) return null;
+    else return authFound;
+  }
+  createAd(
+    token,
+    title,
+    description,
+    category,
+    status,
+    price,
+    urlPhoto,
+    address,
+    phone
+  ) {
+    const auth = this.getUserByToken(token);
+    if (!auth) {
+      console.log("Invalid Token");
+      return;
+    }
+    const newAd = new ModelAd(
+      title,
+      description,
+      category,
+      status,
+      price,
+      urlPhoto,
+      address,
+      auth.referenceKeyUser,
+      phone
+    );
+    this.ads = [...this.ads, newAd];
+    console.log("Ad successfully created!");
+  }
 
-        class ModelAuth { 
-            constructor(referenceKeyUser)
-            { 
-                this.primaryKey = Math.random()
-                this.tokenKey = Math.random()
-                this.referenceKeyUser = referenceKeyUser
-            }
+  updateAd(
+    referenceKeyAd,
+    token,
+    title,
+    description,
+    category,
+    status,
+    price,
+    urlPhoto,
+    address,
+    referenceKeyUser,
+    phone
+  ) {
+    const auth = this.getUserByToken(token);
+    if (!auth) {
+      console.log("Invalid Token");
+      return;
+    }
+    const adFound = this.ads.find(function (ad) {
+      if (ad.primaryKey === referenceKeyAd) return true;
+      else return false;
+    });
+    if (!adFound) {
+      console.log("Unfound Ad");
+      return;
+    }
+    const updatedAd = this.ads.map((ad) => {
+      if (ad.referenceKeyUser === auth.referenceKeyUser)
+        return {
+          ...ad,
+          title: title,
+          description: description,
+          category: category,
+          status: status,
+          price: price,
+          urlPhoto: urlPhoto,
+          address: address,
+          referenceKeyUser: referenceKeyUser,
+          phone: phone,
+        };
+
+      return { ...ad };
+    });
+    this.ads = updatedAd;
+  }
+
+  //dato l'id del Ad creato dall'utente, solo lo stesso che lo ha creato può accedervi (attraverso il token), verificare se è presente all'interno dell'array ads e modificarlo
+
+  deleteAd(referenceKeyAd, token) {
+    const auth = this.getUserByToken(token);
+    if (!auth) {
+      console.log("Invalid Token");
+      //dato l'id del Ad creato dall'utente, verifica se l'utente è lo stesso che lo ha creato (attraverso il token) e lo elimina
+      return;
+    }
+    const adFound = this.ads.find(function (ad) {
+      if (ad.primaryKey === referenceKeyAd) return true;
+      else return false;
+    });
+
+    if (!adFound) {
+      console.log("Unfound Ad");
+      return;
+    }
+    this.ads = this.ads.filter(function (ad) {
+      if (adFound.primaryKey !== ad.primaryKey) return true;
+      else return false;
+    });
+    console.log("Succesfully removed Ad");
+  }
+
+  readPhoneNumber(token, referenceKeyAd) {
+    const auth = this.getUserByToken(token);
+    if (!auth) {
+      console.log("Invalid Token");
+      return;
+    }
+    const adFound = this.ads.find(function (ad) {
+      if (ad.primaryKey === referenceKeyAd) return true;
+      else return false;
+    });
+
+    if (!adFound) {
+      console.log("Unfound Ad");
+      return;
+    }
+    console.log(adFound.phone);
+    adFound.lead = [...adFound.lead, auth];
+  }
+
+  readLeadsList(token, referenceKeyAd) {
+    const auth = this.getUserByToken(token);
+    if (!auth) {
+      console.log("Invalid Token");
+      return;
+    }
+    const adFound = this.ads.find((ad) => {
+      if (ad.primaryKey === referenceKeyAd) return true;
+      else return false;
+    });
+
+    adFound.lead;
+  }
+
+  createReview(
+    referenceKeyUser,
+    token,
+    referenceKeyAd,
+    title,
+    description,
+    rating
+  ) {
+    const auth = this.getUserByToken(token);
+    if (!auth) {
+      console.log("Invalid Token");
+      return;
+    }
+    const newReview = new ModelReview(
+      referenceKeyUser,
+      title,
+      referenceKeyAd,
+      description,
+      rating
+    );
+    this.reviews = [...this.ads, newReview];
+    console.log("Review succesfully created!");
+  }
+
+  deleteReview(referenceKeyReview, token) {
+    const auth = this.getUserByToken(token);
+    if (!auth) {
+      console.log("Invalid Token");
+      return;
+    }
+    const reviewFound = this.reviews.find((review) => {
+      if (review.primaryKey === referenceKeyReview) {
+        return true;
+      } else return false;
+    });
+    this.reviews = this.reviews.filter((review) => {
+      if (reviewFound.primaryKey !== review.primaryKey) {
+        return true;
+      } else return false;
+    });
+    console.log("Succesfully Review Removed");
+  }
+
+  deleteAccount(referenceKeyUser, token) {
+    const auth = this.getUserByToken(token);
+    if (!auth) {
+      console.log("Invalid Token");
+      return;
+    }
+    const userFound = this.users.find((user) => {
+      if (user.primaryKey === referenceKeyUser) {
+        return true;
+      } else return false;
+    });
+    this.users = this.users.filter((user) => {
+      if (userFound.primaryKey !== user.primaryKey) {
+        return true;
+      } else return false;
+    });
+    console.log("Account succesfully deleted");
+  }
+
+  updateUsername(newUsername, token) {
+    const auth = this.getUserByToken(token);
+    if (!auth) {
+      console.log("Invalid Token");
+      return;
+    }
+    this.users = this.users.map((user) => {
+      if (user.referenceKeyUser === auth.referenceKeyUser) {
+        return { ...this.users, username: newUsername };
+      }
+    });
+  }
+
+  updateAdAsSold(token, referenceKeyAd, referenceKeyUserPurchased) {
+    const authFound = this.getUserByToken(token);
+    if (!authFound) {
+      console.log("Invalid Token");
+    } else {
+      const adFound = this.ads.find(function (ad) {
+        if (ad.primaryKey === referenceKeyAd) return true;
+        else return false;
+      });
+      if (!adFound) console.log("Ad not found");
+      else {
+        if (adFound.referenceKeyUser !== authFound.referenceKeyUser) {
+          console.log("Unknown User");
         }
-        
-class ModelReport { 
-    constructor(referenceKeyUser, referenceKeyAd, description, status)
-
-    {
-        this.primaryKey = Math.random()
-        this.referenceKeyAd = referenceKeyAd
-        this.referenceKeyUser = referenceKeyUser
-        this.description = description 
-        this.status = status
+        if (adFound.referenceKeyUserPurchased !== "")
+          console.log("Ad already sold");
+        else {
+          this.ads = this.ads.map(function (ad) {
+            if (adFound.primaryKey === ad.primaryKey) {
+              return {
+                ...ad,
+                referenceKeyUserPurchased: referenceKeyUserPurchased,
+              };
+            } else return { ...ad };
+          });
+        }
+      }
     }
-}
+  }
 
-class ModelFavourite {
-    constructor(referenceKeyUser, referenceKeyAd)
-    {
-        this.primaryKey = Math.random()
-        this.referenceKeyUser = referenceKeyUser
-        this.referenceKeyAd = referenceKeyAd
+  readFilterList(price, category, status, sold) {
+    const authFound = this.getUserByToken(token);
+    if (!authFound) {
+      console.log("Invalid Token");
+    } else {
+      const adFound = this.ads.find(function (ad) {
+        if (ad.primaryKey === referenceKeyAd) return true;
+        else return false;
+      });
+      if (!adFound) console.log("Ad not found");
+      else {
+        this.ads = this.ads.filter(function (ad) {
+          if (
+            (price === "" || ad.price === price) &&
+            (category === "" || ad.category === category) &&
+            (status === "" || ad.status === status) &&
+            (sold === "" || ad.referenceKeyUserPurchased === sold)
+          )
+            return true;
+          else return false;
+        });
+      }
+      //filtra gli ads per categoria scritta nei parametri
     }
+  }
+  //alcuni cambi saranno delle stringhe ben precise
+
+  readAdListByText(text) {
+    //filtra in ads gli oggetti che contengono il testo inserito
+  }
+
+  createFavouriteAdList(referenceKeyAd, token) {
+    const auth = this.getUserByToken(token);
+    if (!auth) {
+      console.log("Invalid Token");
+      return;
+    }
+    const adFound = this.ads.find(function (ad) {
+      if (ad.primaryKey === referenceKeyAd) return true;
+      else return false;
+    });
+    if (!adFound) console.log("Ad not found");
+    else {
+      if (adFound.referenceKeyUserFavourite !== "")
+        console.log("Ad already added to favourites");
+      else {
+        this.ads = this.ads.map(function (ad) {
+          if (adFound.primaryKey === ad.primaryKey) {
+            return {
+              ...ad,
+              referenceKeyUserFavourite: auth.referenceKeyUser,
+            };
+          } else return { ...ad };
+        });
+      }
+    }
+    //verificare se il token corrisponde all'utente
+  }
+
+  updateFavouriteAdList(referenceKeyAd, token) {
+    const auth = this.getUserByToken(token);
+    if (!auth) {
+      console.log("Invalid Token");
+      return;
+    }
+    const adFound = this.ads.find(function (ad) {
+      if (ad.primaryKey === referenceKeyAd) return true;
+      else return false;
+    });
+    if (!adFound) console.log("Ad not found");
+    else {
+      if (adFound.referenceKeyUserFavourite !== "")
+        console.log("Ad already added to favourites");
+      else {
+        this.ads = this.ads.map(function (ad) {
+          if (adFound.primaryKey === ad.primaryKey) {
+            return {
+              ...ad,
+              referenceKeyUserFavourite: auth.referenceKeyUser,
+            };
+          } else return { ...ad };
+        });
+      }
+    }
+  }
+
+  deleteFavouriteAd(referenceKeyAd, token) {
+    const auth = this.getUserByToken(token);
+    if (!auth) {
+      console.log("Invalid Token");
+      return;
+    }
+    const adFound = this.ads.find(function (ad) {
+      if (ad.primaryKey === referenceKeyAd) return true;
+      else return false;
+    });
+    if (!adFound) console.log("Ad not found");
+    else {
+      this.ads = this.ads.filter((ad) => {
+        if (adFound.primaryKey !== ad.primaryKey) return true;
+        else return false;
+      });
+      console.log("Succesfully removed Ad");
+    }
+  }
 }
